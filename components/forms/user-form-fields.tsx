@@ -26,6 +26,10 @@ interface UserFormFieldsProps {
 export function UserFormFields({ form, includePassword = false, showEmail = true, showRole = true }: UserFormFieldsProps) {
   return (
     <>
+      {/* Dummy fields to prevent browser autocomplete */}
+      <input type="email" name="fake_email" autoComplete="email" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} />
+      <input type="password" name="fake_password" autoComplete="current-password" style={{ position: 'absolute', left: '-9999px' }} tabIndex={-1} />
+      
       {showEmail ? (
         <Controller
           name="email"
@@ -36,6 +40,9 @@ export function UserFormFields({ form, includePassword = false, showEmail = true
               <Input 
                 id="email" 
                 type="email" 
+                autoComplete="off"
+                readOnly
+                onFocus={(e) => e.currentTarget.removeAttribute('readonly')}
                 {...field}
                 value={field.value || ""}
               />
@@ -141,6 +148,7 @@ export function UserFormFields({ form, includePassword = false, showEmail = true
           )}
         />
       )}
+    
     </>
   )
 }

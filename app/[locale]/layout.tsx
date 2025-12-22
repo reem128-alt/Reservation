@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-// import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { ReactQueryProvider } from '@/lib/providers/react-query-provider';
@@ -9,20 +9,17 @@ import NextTopLoader from "nextjs-toploader";
 import "leaflet/dist/leaflet.css";
 import "../globals.css";
 
-// Temporarily disabled Google Fonts due to network issues during build
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-//   fallback: ["system-ui", "arial"],
-//   display: "swap",
-// });
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
 
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-//   fallback: ["monospace"],
-//   display: "swap",
-// });
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Reservation app",
@@ -55,18 +52,17 @@ export default async function RootLayout({
       root.classList.add(savedTheme);
       return;
     }
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    root.classList.add(systemTheme);
+    root.classList.add("dark");
   } catch {}
 })();`,
           }}
         />
       </head>
       <body
-        className="antialiased font-sans"
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}
       >
         <NextTopLoader color="var(--primary)" height={3} showSpinner={false} />
-        <ThemeProvider defaultTheme="system" storageKey="ui-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
           <NextIntlClientProvider messages={messages}>
             <ReactQueryProvider>
               {children}
