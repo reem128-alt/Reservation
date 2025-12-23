@@ -79,8 +79,17 @@ function StatCard({
   )
 }
 
-function SkeletonLine({ className }: { className?: string }) {
-  return <div className={`h-4 rounded-md bg-muted animate-pulse ${className ?? ""}`} />
+import { PageSkeleton } from "@/components/ui/page-skeleton"
+
+function DashboardSkeleton() {
+  return (
+    <PageSkeleton 
+      header={true}
+      stats={3}
+      tableRows={5}
+      tableCols={5}
+    />
+  )
 }
 
 export default function DashboardPage() {
@@ -93,6 +102,11 @@ export default function DashboardPage() {
     queryKey: ["bookings"],
     queryFn: () => bookingsApi.list(),
   })
+
+  // Show loading state while any query is loading
+  if (statsQuery.isLoading || bookingsQuery.isLoading) {
+    return <DashboardSkeleton />
+  }
 
   const stats = statsQuery.data
   const bookings = bookingsQuery.data?.data ?? []
@@ -113,13 +127,7 @@ export default function DashboardPage() {
           tone="primary"
           icon={<Users className="h-4 w-4" />}
           value={
-            statsQuery.isLoading ? (
-              <div className="mt-1 space-y-2">
-                <SkeletonLine className="w-24" />
-              </div>
-            ) : (
-              stats?.totalUsers ?? 0
-            )
+            stats?.totalUsers ?? 0
           }
         />
 
@@ -128,13 +136,7 @@ export default function DashboardPage() {
           tone="accent"
           icon={<CalendarDays className="h-4 w-4" />}
           value={
-            statsQuery.isLoading ? (
-              <div className="mt-1 space-y-2">
-                <SkeletonLine className="w-24" />
-              </div>
-            ) : (
-              stats?.totalBookings ?? 0
-            )
+            stats?.totalBookings ?? 0
           }
         />
 
@@ -143,13 +145,7 @@ export default function DashboardPage() {
           tone="secondary"
           icon={<DollarSign className="h-4 w-4" />}
           value={
-            statsQuery.isLoading ? (
-              <div className="mt-1 space-y-2">
-                <SkeletonLine className="w-32" />
-              </div>
-            ) : (
-              formatMoney(stats?.totalRevenue ?? 0, "USD", { maximumFractionDigits: 0 })
-            )
+            formatMoney(stats?.totalRevenue ?? 0, "USD", { maximumFractionDigits: 0 })
           }
         />
       </div>
@@ -176,27 +172,10 @@ export default function DashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {bookingsQuery.isLoading ? (
+              {recentBookings.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-6" colSpan={6}>
-                    <div className="space-y-3">
-                      <SkeletonLine className="w-40" />
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
-                          <DollarSign className="h-6 w-6" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-sm text-muted-foreground">Total revenue</div>
-                          <div className="mt-1 text-2xl font-semibold tracking-tight">
-                            {statsQuery.isLoading ? (
-                              <SkeletonLine className="w-32" />
-                            ) : (
-                              formatMoney(stats?.totalRevenue ?? 0, "USD", { maximumFractionDigits: 0 })
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                  <td className="px-4 py-6 text-center text-muted-foreground" colSpan={5}>
+                    No recent bookings found
                   </td>
                 </tr>
               ) : recentBookings.length === 0 ? (

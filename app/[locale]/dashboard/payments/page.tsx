@@ -7,6 +7,8 @@ import type { CellContext, ColumnDef } from "@tanstack/react-table"
 import { useQuery } from "@tanstack/react-query"
 
 import { DataTable } from "@/components/ui/data-table"
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 import { paymentsApi, type Payment } from "@/lib/api/payments"
 import { StatusBadge } from "@/lib/utils/status"
 
@@ -144,9 +146,21 @@ export default function PaymentsPage() {
   )
 
   const data = paymentsQuery.data?.data ?? []
+  const meta = paymentsQuery.data?.meta
   const isLoading = paymentsQuery.isLoading
   const isError = paymentsQuery.isError
-  const meta = paymentsQuery.data?.meta
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <DataTableSkeleton columns={7} searchable filterable />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -155,7 +169,6 @@ export default function PaymentsPage() {
         <p className="text-muted-foreground mt-1">View and track all payment transactions</p>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
       {isError ? <p className="text-destructive">Failed to load payments.</p> : null}
 
       <DataTable

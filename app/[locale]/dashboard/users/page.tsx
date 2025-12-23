@@ -5,7 +5,6 @@ import * as React from "react"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { usePathname, useRouter } from "next/navigation"
 import { MessageSquare, Pencil, Trash2, UserPlus } from "lucide-react"
 import { toast } from "sonner"
 
@@ -14,6 +13,8 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable } from "@/components/ui/data-table"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { FormDialog } from "@/components/ui/form-dialog"
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 import { UserFormFields } from "@/components/forms/user-form-fields"
 import { ChatWindow } from "@/components/chat/chat-window"
 import { usersApi, type User } from "@/lib/api/users"
@@ -34,11 +35,6 @@ function formatDate(value: string) {
 }
 
 export default function UsersPage() {
-  const pathname = usePathname()
-  const router = useRouter()
-  const localeSegment = pathname?.split("/")?.[1]
-  const locale = localeSegment === "en" || localeSegment === "ar" ? localeSegment : "en"
-
   const queryClient = useQueryClient()
   const [page, setPage] = React.useState(1)
   const [limit] = React.useState(10)
@@ -161,7 +157,7 @@ export default function UsersPage() {
     () => ({
       name: selectedUser?.name ?? "",
       email: selectedUser?.email ?? "",
-      role: (selectedUser?.role ? selectedUser.role.trim().toUpperCase() : "USER"),
+      role: selectedUser?.role ? selectedUser.role.trim().toUpperCase() : "USER",
       image: selectedUser?.image ?? "",
     }),
     [selectedUser]
@@ -238,10 +234,10 @@ export default function UsersPage() {
               >
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button 
-                type="button" 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => openDelete(user)}
                 title="Delete user"
@@ -253,22 +249,33 @@ export default function UsersPage() {
         },
       },
     ],
-    [locale, openChat, openDelete, openEdit, router]
+    [openChat, openDelete, openEdit]
   )
 
   const data = usersQuery.data?.data ?? []
+  const meta = usersQuery.data?.meta
   const isLoading = usersQuery.isLoading
   const isError = usersQuery.isError
-  const meta = usersQuery.data?.meta
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <DataTableSkeleton columns={5} searchable />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <p className="text-muted-foreground mt-1">Manage and organize your users</p>
+        <p className="text-muted-foreground mt-1">Manage all users in the system</p>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
       {isError ? <p className="text-destructive">Failed to load users.</p> : null}
 
       <DataTable
@@ -281,15 +288,12 @@ export default function UsersPage() {
         serverPage={meta?.page ?? page}
         serverPageCount={meta?.totalPages ?? 1}
         onServerPageChange={(nextPage) => setPage(nextPage)}
-        toolbarRight={(
-          <ShinyButton
-            onClick={() => setCreateOpen(true)}
-            variant="toolbar"
-          >
+        toolbarRight={
+          <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
             <UserPlus className="h-4 w-4" />
             Create User
           </ShinyButton>
-        )}
+        }
       />
 
       <FormDialog
@@ -341,16 +345,19 @@ export default function UsersPage() {
         }}
       />
 
-      <Dialog open={chatOpen} onOpenChange={(open) => {
-        setChatOpen(open)
-        if (!open) {
-          setChatUser(null)
-          setChatConversationId(undefined)
-        }
-      }}>
+      <Dialog
+        open={chatOpen}
+        onOpenChange={(open) => {
+          setChatOpen(open)
+          if (!open) {
+            setChatUser(null)
+            setChatConversationId(undefined)
+          }
+        }}
+      >
         <DialogContent className=" h-[600px] p-0 flex flex-col">
           {chatUser && (
-            <ChatWindow 
+            <ChatWindow
               initialConversationId={chatConversationId}
               targetUserId={chatUser.id}
               className="h-full"

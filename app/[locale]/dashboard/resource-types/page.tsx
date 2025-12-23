@@ -5,8 +5,7 @@ import * as React from "react"
 import type { CellContext, ColumnDef } from "@tanstack/react-table"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { Pencil, Trash2, Plus, HelpCircle } from "lucide-react"
-import * as LucideIcons from "lucide-react"
+import { Pencil, Trash2, Plus } from "lucide-react"
 import { toast } from "sonner"
 import type { UseFormReturn } from "react-hook-form"
 
@@ -15,6 +14,8 @@ import { Button } from "@/components/ui/button"
 import { ShinyButton } from "@/components/ui/shiny-button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable } from "@/components/ui/data-table"
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FormDialog } from "@/components/ui/form-dialog"
 import { resourceTypesApi } from "@/lib/api/resource-types"
 import { toastApiError } from "@/lib/utils/toast"
@@ -225,6 +226,18 @@ export default function ResourceTypesPage() {
   const isError = resourceTypesQuery.isError
   const meta = resourceTypesQuery.data?.meta
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <DataTableSkeleton columns={4} searchable />
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -232,7 +245,6 @@ export default function ResourceTypesPage() {
         <p className="text-muted-foreground mt-1">Manage resource type categories</p>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
       {isError ? <p className="text-destructive">Failed to load resource types.</p> : null}
 
       <DataTable

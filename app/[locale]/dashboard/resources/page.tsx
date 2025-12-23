@@ -18,6 +18,8 @@ import { Button } from "@/components/ui/button"
 import { ShinyButton } from "@/components/ui/shiny-button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable } from "@/components/ui/data-table"
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FormDialog } from "@/components/ui/form-dialog"
 import { cloudinaryApi } from "@/lib/api/cloudinary"
 import { resourcesApi, type Resource, type ResourceDetails } from "@/lib/api/resources"
@@ -402,18 +404,45 @@ export default function ResourcesPage() {
   )
 
   const data = resourcesQuery.data?.data ?? []
-  const isLoading = resourcesQuery.isLoading
-  const isError = resourcesQuery.isError
+  const isLoading = resourcesQuery.isLoading || resourceTypesQuery.isLoading
+  const isError = resourcesQuery.isError || resourceTypesQuery.isError
   const meta = resourcesQuery.data?.meta
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <DataTableSkeleton columns={4} searchable filterable />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
-        <p className="text-muted-foreground mt-1">Manage and organize your resources</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
+          <p className="text-muted-foreground mt-1">Manage your resources and their availability.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
+            <Plus className="h-4 w-4" />
+            Create Resource
+          </ShinyButton>
+          <Button variant="outline" onClick={() => setAvailabilityOpen(true)}>
+            <Calendar className="mr-2 h-4 w-4" />
+            Add Timeslot
+          </Button>
+          <Button variant="outline" onClick={() => setSchedulesOpen(true)}>
+            <Calendar className="mr-2 h-4 w-4" />
+            View Schedules
+          </Button>
+        </div>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
       {isError ? <p className="text-destructive">Failed to load resources.</p> : null}
 
       <DataTable
@@ -426,12 +455,12 @@ export default function ResourcesPage() {
         serverPage={meta?.page ?? page}
         serverPageCount={meta?.totalPages ?? 1}
         onServerPageChange={(nextPage) => setPage(nextPage)}
-        toolbarRight={(
+        toolbarRight={
           <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
             <Plus className="h-4 w-4" />
             Create Resource
           </ShinyButton>
-        )}
+        }
       />
 
       <FormDialog

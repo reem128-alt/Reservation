@@ -15,6 +15,8 @@ import { Button } from "@/components/ui/button"
 import { ShinyButton } from "@/components/ui/shiny-button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DataTable } from "@/components/ui/data-table"
+import { DataTableSkeleton } from "@/components/ui/data-table-skeleton"
+import { Skeleton } from "@/components/ui/skeleton"
 import { FormDialog } from "@/components/ui/form-dialog"
 import { bookingsApi } from "@/lib/api/bookings"
 import { resourcesApi, type Resource } from "@/lib/api/resources"
@@ -276,11 +278,21 @@ export default function BookingsPage() {
   )
 
   const data = bookingsQuery.data?.data ?? []
-  const isLoading = bookingsQuery.isLoading
-  const isError = bookingsQuery.isError
+  const isLoading = bookingsQuery.isLoading || usersQuery.isLoading || resourcesQuery.isLoading
+  const isError = bookingsQuery.isError || usersQuery.isError || resourcesQuery.isError
   const meta = bookingsQuery.data?.meta
 
-  
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <DataTableSkeleton columns={6} searchable filterable />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -289,7 +301,6 @@ export default function BookingsPage() {
         <p className="text-muted-foreground mt-1">Manage and organize your bookings</p>
       </div>
 
-      {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
       {isError ? <p className="text-destructive">Failed to load bookings.</p> : null}
 
       <DataTable
@@ -302,16 +313,14 @@ export default function BookingsPage() {
         serverPage={meta?.page ?? page}
         serverPageCount={meta?.totalPages ?? 1}
         onServerPageChange={(nextPage: number) => setPage(nextPage)}
-        toolbarRight={(
-          <ShinyButton
-            onClick={() => setCreateOpen(true)}
-            variant="toolbar"
-            disabled={usersQuery.isLoading || resourcesQuery.isLoading}
-          >
-            <Plus className="h-4 w-4" />
-            Create Booking
-          </ShinyButton>
-        )}
+        toolbarRight={
+          <div className="flex items-center gap-2">
+            <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
+              <Plus className="h-4 w-4" />
+              Create Booking
+            </ShinyButton>
+          </div>
+        }
       />
 
       <FormDialog
