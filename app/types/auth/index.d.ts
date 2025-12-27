@@ -1,6 +1,12 @@
 interface AuthInitResponse {
   message: string
   email: string
+  id?: number
+  token?: string
+  role?: string
+  name?: string
+  emailVerified?: boolean
+  demo?: boolean
 }
 
 interface VerifyOtpResponse {
