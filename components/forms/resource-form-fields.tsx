@@ -101,35 +101,33 @@ export function ResourceFormFields({ form, resourceTypes = [] }: ResourceFormFie
         name="resourceTypeId"
         control={form.control}
         render={({ field }) => {
+          const hasTypes = activeResourceTypes.length > 0
           return (
             <div className="space-y-2">
               <Label htmlFor="resourceTypeId">Type</Label>
-              <Select 
-                value={field.value ? String(field.value) : ""} 
-                onValueChange={(value) => field.onChange(Number(value))}
-              >
-                <SelectTrigger id="resourceTypeId">
-                  <SelectValue placeholder="Select a type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {activeResourceTypes.length > 0 ? (
-                    activeResourceTypes.map((rt) => {
+              {hasTypes ? (
+                <Select
+                  value={field.value ? String(field.value) : ""}
+                  onValueChange={(value) => field.onChange(Number(value))}
+                >
+                  <SelectTrigger id="resourceTypeId">
+                    <SelectValue placeholder="Select a type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeResourceTypes.map((rt) => {
                       return (
                         <SelectItem key={rt.id} value={String(rt.id)}>
                           <div className="flex items-center gap-2">
-                          
                             <span>{rt.label}</span>
                           </div>
                         </SelectItem>
                       )
-                    })
-                  ) : (
-                    <SelectItem value="" disabled>
-                      No resource types available
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
+                    })}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <p className="text-sm text-muted-foreground">No resource types available.</p>
+              )}
               {form.formState.errors.resourceTypeId ? (
                 <p className="text-sm text-destructive">{String(form.formState.errors.resourceTypeId.message)}</p>
               ) : null}

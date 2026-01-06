@@ -427,20 +427,22 @@ export default function ResourcesPage() {
           <h1 className="text-3xl font-bold tracking-tight">Resources</h1>
           <p className="text-muted-foreground mt-1">Manage your resources and their availability.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
-            <Plus className="h-4 w-4" />
-            Create Resource
-          </ShinyButton>
-          <Button variant="outline" onClick={() => setAvailabilityOpen(true)}>
-            <Calendar className="mr-2 h-4 w-4" />
-            Add Timeslot
-          </Button>
-          <Button variant="outline" onClick={() => setSchedulesOpen(true)}>
-            <Calendar className="mr-2 h-4 w-4" />
-            View Schedules
-          </Button>
-        </div>
+        {data.length > 0 ? (
+          <div className="flex items-center gap-2">
+            <ShinyButton onClick={() => setCreateOpen(true)} variant="toolbar">
+              <Plus className="h-4 w-4" />
+              Create Resource
+            </ShinyButton>
+            <Button variant="outline" onClick={() => setAvailabilityOpen(true)}>
+              <Calendar className="mr-2 h-4 w-4" />
+              Add Timeslot
+            </Button>
+            <Button variant="outline" onClick={() => setSchedulesOpen(true)}>
+              <Calendar className="mr-2 h-4 w-4" />
+              View Schedules
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       {isError ? <p className="text-destructive">Failed to load resources.</p> : null}
