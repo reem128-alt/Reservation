@@ -38,7 +38,7 @@ interface ForgotPasswordResponse {
 
 interface ResetPasswordPayload {
   email: string
-  otp: string
+  code: string
   newPassword: string
 }
 

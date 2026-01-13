@@ -20,7 +20,7 @@ export default function ResetPasswordPage() {
   const locale = localeSegment === "en" || localeSegment === "ar" ? localeSegment : "en"
 
   const [email, setEmail] = useState("")
-  const [otp, setOtp] = useState("")
+  const [code, setCode] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -45,7 +45,7 @@ export default function ResetPasswordPage() {
 
     try {
       setIsLoading(true)
-      const response = await authApi.resetPassword({ email, otp, newPassword })
+      const response = await authApi.resetPassword({ email, code, newPassword })
       toast.success("Password updated", {
         description: response.message,
       })
@@ -69,16 +69,16 @@ export default function ResetPasswordPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="otp" className="text-sm font-medium">
-            OTP
+          <Label htmlFor="code" className="text-sm font-medium">
+            Verification code
           </Label>
           <Input
-            id="otp"
+            id="code"
             inputMode="numeric"
-            placeholder="Enter OTP"
+            placeholder="Enter the code sent to your email"
             className="h-12 bg-card border-border"
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
             required
           />
         </div>

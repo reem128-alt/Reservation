@@ -43,14 +43,17 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
 
       {/* Right Panel - Form */}
       <div className="flex-1 flex flex-col justify-center px-6 py-12 lg:px-16 relative">
-        <div className="absolute top-6 right-6">
+        <div className="hidden lg:block absolute top-12 right-12">
           <ThemeToggle />
         </div>
-        <div className="lg:hidden flex items-center gap-3 mb-12">
-          <div className="p-2 bg-primary rounded-xl">
-            <CalendarDays className="h-6 w-6 text-primary-foreground" />
+        <div className="lg:hidden flex items-center justify-between mb-12">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary rounded-xl">
+              <CalendarDays className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-semibold tracking-tight text-foreground">Reserve</span>
           </div>
-          <span className="text-xl font-semibold tracking-tight text-foreground">Reserve</span>
+          <ThemeToggle />
         </div>
 
         <div className="w-full max-w-md mx-auto">
