@@ -9,6 +9,7 @@ import { useStore } from "@/lib/store/store"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { chatApi } from "@/lib/api/chat"
+import type { ChatMessage, ChatConversation } from "@/app/types/chat"
 
 interface ChatWindowProps {
   onClose?: () => void
@@ -23,6 +24,7 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   const [isTyping, setIsTyping] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
   const profile = useStore((state) => state.profile)
 
   const loadMessages = useCallback(async (conversationId: number) => {
@@ -64,7 +66,7 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   }, [selectedConversation, profile?.id])
 
   const handleMessagesRead = useCallback((data: { conversationId: number }) => {
-    setSelectedConversation((currentConv) => {
+    setSelectedConversation((currentConv: ChatConversation | null) => {
       if (currentConv && data.conversationId === currentConv.id) {
         setMessages((prev) =>
           prev.map((msg) =>
@@ -77,7 +79,7 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   }, [])
 
   const handleUserTyping = useCallback((data: { conversationId: number; userId: number; isTyping: boolean }) => {
-    setSelectedConversation((currentConv) => {
+    setSelectedConversation((currentConv: ChatConversation | null) => {
       if (currentConv && data.conversationId === currentConv.id && data.userId !== profile?.id) {
         setIsTyping(data.isTyping)
       }
@@ -123,8 +125,10 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
           console.error("Failed to load conversations:", error)
         }
       }
+      setInitialLoading(false)
     }
 
+    // Load data asynchronously without blocking UI
     loadExistingConversation()
   }, [initialConversationId, targetUserId, profile, loadMessages])
 
@@ -197,7 +201,7 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   return (
     <div
       className={cn(
-        "flex flex-col bg-background border rounded-lg shadow-lg overflow-hidden transition-all",
+        "flex flex-col bg-background border rounded-lg shadow-lg overflow-hidden transition-all w-[500px]",
         isMinimized ? "h-14" : "h-[600px]",
         className
       )}
@@ -229,7 +233,11 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
 
       {!isMinimized && (
         <div className="flex flex-1 flex-col overflow-hidden">
-          {loading ? (
+          {initialLoading ? (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">Opening chat...</p>
+            </div>
+          ) : loading ? (
             <div className="flex-1 flex items-center justify-center">
               <p className="text-sm text-muted-foreground">Loading messages...</p>
             </div>

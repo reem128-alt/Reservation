@@ -1,4 +1,4 @@
-interface ChatMessage {
+export interface ChatMessage {
   id: number
   conversationId: number
   senderId: number
@@ -13,7 +13,7 @@ interface ChatMessage {
   }
 }
 
-interface ChatConversation {
+export interface ChatConversation {
   id: number
   userId: number
   status: "ACTIVE" | "CLOSED"
@@ -29,12 +29,12 @@ interface ChatConversation {
   unreadCount?: number
 }
 
-interface SendMessageRequest {
+export interface SendMessageRequest {
   conversationId?: number
   content: string
   userId?: number
 }
 
-interface UpdateConversationRequest {
+export interface UpdateConversationRequest {
   status: "ACTIVE" | "CLOSED"
 }

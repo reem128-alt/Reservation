@@ -1,4 +1,5 @@
 import { apiClient } from "./axios"
+import type { ChatMessage, ChatConversation, SendMessageRequest, UpdateConversationRequest } from "@/app/types/chat"
 
 export const chatApi = {
   sendMessage: async (data: SendMessageRequest): Promise<ChatMessage> => {
@@ -50,7 +51,39 @@ export const chatApi = {
   },
 
   getUnreadCount: async (): Promise<number> => {
-    const response = await apiClient.get<{ count: number }>("/chat/unread-count")
-    return response.data.count
+    try {
+      const response = await apiClient.get("/chat/unread-count")
+      // The API returns {unreadMessages: 2} directly in response.data
+      if (response.data && typeof response.data === 'object' && 'unreadMessages' in response.data) {
+        return response.data.unreadMessages || 0
+      }
+      return 0
+    } catch (error) {
+      console.error("Error fetching unread count:", error)
+      return 0
+    }
+  },
+
+  getUnreadDetails: async (): Promise<{
+    totalUnreadConversations: number
+    conversations: Array<{
+      conversationId: number
+      user: {
+        id: number
+        name: string
+        email: string
+      }
+      unreadCount: number
+      lastUnreadMessage?: {
+        id: number
+        content: string
+        senderId: number
+        createdAt: string
+      }
+      lastActivity: string
+    }>
+  }> => {
+    const response = await apiClient.get("/chat/unread-details")
+    return response.data
   },
 }

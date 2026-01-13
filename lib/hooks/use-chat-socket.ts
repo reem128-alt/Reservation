@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react"
 import { io, Socket } from "socket.io-client"
 import { useStore } from "@/lib/store/store"
+import type { ChatMessage } from "@/app/types/chat"
 
 interface UseChatSocketOptions {
   onNewMessage?: (message: ChatMessage) => void

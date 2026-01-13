@@ -54,6 +54,12 @@ export default function UsersPage() {
     queryFn: () => usersApi.list({ page, limit, search: search || undefined }),
   })
 
+  const unreadDetailsQuery = useQuery({
+    queryKey: ["unread-details"],
+    queryFn: () => chatApi.getUnreadDetails(),
+    refetchInterval: 30000, // Refresh every 30 seconds
+  })
+
   const deleteMutation = useMutation({
     mutationFn: (id: number) => usersApi.delete(id),
     onSuccess: async () => {
@@ -101,6 +107,15 @@ export default function UsersPage() {
   const [chatUser, setChatUser] = React.useState<User | null>(null)
   const [chatConversationId, setChatConversationId] = React.useState<number | undefined>(undefined)
 
+  // Helper function to get unread count for a specific user
+  const getUnreadCountForUser = React.useCallback((userId: number) => {
+    if (!unreadDetailsQuery.data) return 0
+    const conversation = unreadDetailsQuery.data.conversations.find(
+      conv => conv.user.id === userId
+    )
+    return conversation?.unreadCount || 0
+  }, [unreadDetailsQuery.data])
+
   const openEdit = React.useCallback(
     (user: User) => {
       setSelectedUser({
@@ -132,7 +147,10 @@ export default function UsersPage() {
       console.error("Failed to fetch conversation:", error)
       setChatConversationId(undefined)
     }
-  }, [])
+
+    // Refresh unread details after opening chat
+    queryClient.invalidateQueries({ queryKey: ["unread-details"] })
+  }, [queryClient])
 
   const onCreateSubmit = async (values: UserCreateFormData) => {
     await createMutation.mutateAsync(values)
@@ -212,17 +230,24 @@ export default function UsersPage() {
         header: "Actions",
         cell: ({ row }: CellContext<User, unknown>) => {
           const user = row.original
+          const unreadCount = getUnreadCountForUser(user.id)
+          
           return (
             <div className="flex items-center gap-1">
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 relative"
                 onClick={() => openChat(user)}
                 title="Chat with user"
               >
                 <MessageSquare className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </Button>
               <Button
                 type="button"
@@ -249,7 +274,7 @@ export default function UsersPage() {
         },
       },
     ],
-    [openChat, openDelete, openEdit]
+    [openChat, openDelete, openEdit, getUnreadCountForUser]
   )
 
   const data = usersQuery.data?.data ?? []

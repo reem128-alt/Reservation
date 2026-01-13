@@ -6,6 +6,7 @@ import { chatApi} from "@/lib/api/chat"
 import { useStore } from "@/lib/store/store"
 import { formatDistanceToNow } from "@/lib/utils/format"
 import { cn } from "@/lib/utils"
+import type { ChatConversation } from "@/app/types/chat"
 
 interface ConversationListProps {
   selectedConversationId?: number

@@ -8,6 +8,17 @@ import { useEffect, useMemo, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useStore } from "@/lib/store/store"
+import { ChatButton } from "@/components/chat/chat-button"
+import { ChatWindow } from "@/components/chat/chat-window"
+
+// Global state for chat window
+let globalChatOpen = false
+const chatListeners = new Set<(open: boolean) => void>()
+
+export const setChatOpen = (open: boolean) => {
+  globalChatOpen = open
+  chatListeners.forEach(listener => listener(open))
+}
 
 export function Navbar() {
   const pathname = usePathname()
@@ -76,6 +87,7 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <ChatButton onClick={() => setChatOpen(!globalChatOpen)} />
           
           <div className="relative">
             <Button
@@ -158,5 +170,28 @@ export function Navbar() {
         </div>
       </div>
     </nav>
+  )
+}
+
+// Floating chat window that should be rendered outside the navbar
+export function FloatingChatWindow() {
+  const [chatOpen, setChatOpen] = useState(globalChatOpen)
+
+  useEffect(() => {
+    const listener = (open: boolean) => setChatOpen(open)
+    chatListeners.add(listener)
+    return () => {
+      chatListeners.delete(listener)
+    }
+  }, [])
+
+  return (
+    <>
+      {chatOpen && (
+        <div className="fixed bottom-4 right-4 z-50">
+          <ChatWindow onClose={() => setChatOpen(false)} />
+        </div>
+      )}
+    </>
   )
 }

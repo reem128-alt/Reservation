@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { resourcesApi } from "@/lib/api/resources"
 import { useStore } from "@/lib/store/store"
-import { FloatingChat } from "@/components/chat/floating-chat"
+import { FloatingChatWindow } from "./components/navbar"
 
 export default function DashboardPage() {
   const params = useParams<{ locale?: string }>()
@@ -277,7 +277,7 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
-      <FloatingChat />
+      <FloatingChatWindow />
     </div>
   )
 }

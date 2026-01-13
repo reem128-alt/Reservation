@@ -15,19 +15,26 @@ export function ChatButton({ onClick, className }: ChatButtonProps) {
   const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
+    let mounted = true
     const loadUnreadCount = async () => {
       try {
         const count = await chatApi.getUnreadCount()
-        setUnreadCount(count)
+        if (mounted) {
+          setUnreadCount(count)
+        }
       } catch (error) {
         console.error("Failed to load unread count:", error)
       }
     }
 
+    // Load immediately but don't block the UI
     loadUnreadCount()
     const interval = setInterval(loadUnreadCount, 30000)
 
-    return () => clearInterval(interval)
+    return () => {
+      mounted = false
+      clearInterval(interval)
+    }
   }, [])
 
   return (
