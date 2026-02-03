@@ -188,8 +188,8 @@ export function FloatingChatWindow() {
   return (
     <>
       {chatOpen && (
-        <div className="fixed bottom-4 right-4 z-50">
-          <ChatWindow onClose={() => setChatOpen(false)} />
+        <div className="fixed bottom-4 right-4 z-50 w-[400px]">
+          <ChatWindow onClose={() => setChatOpen(false)} className="w-full" />
         </div>
       )}
     </>

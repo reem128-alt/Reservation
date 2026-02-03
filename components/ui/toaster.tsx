@@ -19,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "!bg-accent !text-accent-foreground !border-accent",
           error:
             "!bg-destructive !text-destructive-foreground !border-destructive",
-          description: "group-[.toast]:text-foreground/80",
+          description: "!text-white",
           actionButton:
             "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
           cancelButton:

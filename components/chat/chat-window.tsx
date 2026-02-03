@@ -15,10 +15,11 @@ interface ChatWindowProps {
   onClose?: () => void
   initialConversationId?: number
   targetUserId?: number
+  targetUser?: { id: number; name: string; email: string }
   className?: string
 }
 
-export function ChatWindow({ onClose, initialConversationId, targetUserId, className }: ChatWindowProps) {
+export function ChatWindow({ onClose, initialConversationId, targetUserId, targetUser, className }: ChatWindowProps) {
   const [selectedConversation, setSelectedConversation] = useState<ChatConversation | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isTyping, setIsTyping] = useState(false)
@@ -192,8 +193,13 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   }
 
   const getTitle = () => {
-    if (profile?.role === "ADMIN" && selectedConversation) {
-      return selectedConversation.user?.name || selectedConversation.user?.email || "User Chat"
+    if (profile?.role === "ADMIN") {
+      if (selectedConversation) {
+        return selectedConversation.user?.name || selectedConversation.user?.email || "User Chat"
+      }
+      if (targetUser) {
+        return targetUser.name || targetUser.email || "User Chat"
+      }
     }
     return "Support Chat"
   }
@@ -201,7 +207,7 @@ export function ChatWindow({ onClose, initialConversationId, targetUserId, class
   return (
     <div
       className={cn(
-        "flex flex-col bg-background border rounded-lg shadow-lg overflow-hidden transition-all w-[500px]",
+        "flex flex-col bg-background border rounded-lg shadow-lg overflow-hidden transition-all ",
         isMinimized ? "h-14" : "h-[600px]",
         className
       )}

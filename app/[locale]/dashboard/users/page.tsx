@@ -385,6 +385,7 @@ export default function UsersPage() {
             <ChatWindow
               initialConversationId={chatConversationId}
               targetUserId={chatUser.id}
+              targetUser={{ id: chatUser.id, name: chatUser.name, email: chatUser.email }}
               className="h-full"
               onClose={() => {
                 setChatOpen(false)

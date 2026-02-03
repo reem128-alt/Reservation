@@ -79,6 +79,7 @@ export default function ResetPasswordPage() {
             className="h-12 bg-card border-border"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            autoComplete="one-time-code"
             required
           />
         </div>
@@ -96,6 +97,7 @@ export default function ResetPasswordPage() {
               className="pl-12 h-12 bg-card border-border"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>

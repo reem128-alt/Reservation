@@ -263,4 +263,9 @@
   .delay-1000 {
     animation-delay: 1s;
   }
+
+  /* Toast description white color override */
+  [data-sonner-toaster] [data-description] {
+    color: white !important;
+  }
 }

@@ -11,8 +11,8 @@ export const FloatingChat = memo(function FloatingChat() {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[400px] h-[600px] shadow-2xl">
-          <ChatWindow onClose={() => setIsOpen(false)} />
+        <div className="fixed bottom-24 right-6 z-50 w-[700px] h-[600px] shadow-2xl">
+          <ChatWindow onClose={() => setIsOpen(false)} className="w-full" />
         </div>
       )}
 
